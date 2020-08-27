@@ -72,16 +72,18 @@ $.when(
         $("#gh-user-data").html(userInformationHTML(userData));
         $("#gh-repo-data").html(repoInformationHTML(reporData));
     }, function (errorResponse) {
-        if (errorResponse.staus === 404) {
+        if (errorResponse.status === 404) {
             $("#gh-user-data").html(
                 `<h2>No Info found for user ${username}</h2>`);
-
-        } else {
+            } else if (errorResponse.status === 403) {
+                    var resetTime = new Date(errorRepsonse.getResponseHeader('X-RateLimit-Reset')*1000);
+                    $("#gh-user-data").html(`<h4>Too many requests, please wait until ${resetTime.toLocaleTimeString()}</h4>`);
+            } else {
                 console.log(errorResponse);
                 $("#gh-user-data").html(`<h2>Error: ${errorResponse.responseJSON.message}</h2>`);
         }
     });
 
-    }
+}
 
 $(document).ready(fetchGitHubInformation);
